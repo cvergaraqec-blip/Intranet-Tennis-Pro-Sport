@@ -64,27 +64,27 @@ export default async function HorariosPage({
   const turnosHoy = ((deHoy ?? []) as FilaTurno[]).map(aTurno);
 
   const estado = (t: Turno) => {
-    if (ahora < hora(t.inicio)) return { texto: `Entra a las ${hora(t.inicio)}`, color: "text-tenue" };
-    if (ahora < hora(t.fin)) return { texto: "En tienda ahora", color: "text-[#136b3e]" };
-    return { texto: "Turno terminado", color: "text-tenue" };
+    if (ahora < hora(t.inicio)) return { texto: `Arrive à ${hora(t.inicio)}`, color: "text-tenue" };
+    if (ahora < hora(t.fin)) return { texto: "En magasin", color: "text-[#136b3e]" };
+    return { texto: "Service terminé", color: "text-tenue" };
   };
 
   return (
     <section className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Horarios de Tienda</h1>
+          <h1 className="text-3xl font-bold">Horaires du magasin</h1>
           <p className="mt-1 text-[15px] text-tenue">
-            {esAdmin ? "Planificación semanal de personal" : "Tus turnos de la semana"}
+            {esAdmin ? "Planning hebdomadaire du personnel" : "Vos horaires de la semaine"}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center rounded-lg border border-borde bg-white p-0.5">
-            <Link href={`/horarios?semana=${sumarDias(lunes, -7)}`} aria-label="Semana anterior" className="flex h-11 w-11 items-center justify-center text-lg">
+            <Link href={`/horarios?semana=${sumarDias(lunes, -7)}`} aria-label="Semaine précédente" className="flex h-11 w-11 items-center justify-center text-lg">
               ‹
             </Link>
             <span className="px-2 text-[15px] font-semibold">{rangoSemana(lunes)}</span>
-            <Link href={`/horarios?semana=${sumarDias(lunes, 7)}`} aria-label="Semana siguiente" className="flex h-11 w-11 items-center justify-center text-lg">
+            <Link href={`/horarios?semana=${sumarDias(lunes, 7)}`} aria-label="Semaine suivante" className="flex h-11 w-11 items-center justify-center text-lg">
               ›
             </Link>
           </div>
@@ -93,7 +93,7 @@ export default async function HorariosPage({
               href={`/horarios?semana=${lunes}&nuevo=${dias.includes(fechaHoy) ? fechaHoy : lunes}`}
               className="flex h-12 items-center rounded-lg bg-acento px-5 font-semibold"
             >
-              + Agregar turno
+              + Ajouter un horaire
             </Link>
           )}
         </div>
@@ -102,7 +102,7 @@ export default async function HorariosPage({
       {esAdmin && nuevo && (
         <form action={agregarTurno} className="flex flex-wrap items-end gap-3 rounded-xl border border-borde bg-white p-4">
           <label className="flex min-w-48 flex-1 flex-col gap-1 text-sm font-medium">
-            Empleado
+            Employé
             <select name="empleado_id" required className={campo}>
               {(empleados ?? []).map((e) => (
                 <option key={e.id} value={e.id}>
@@ -112,23 +112,23 @@ export default async function HorariosPage({
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium">
-            Día
+            Jour
             <input name="fecha" type="date" required defaultValue={nuevo} className={campo} />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium">
-            Entra
+            Arrivée
             <input name="inicio" type="time" required defaultValue="09:00" className={campo} />
           </label>
           <label className="flex flex-col gap-1 text-sm font-medium">
-            Sale
+            Départ
             <input name="fin" type="time" required defaultValue="17:00" className={campo} />
           </label>
-          <button className="h-11 rounded-lg bg-navy px-5 font-semibold text-white">Guardar turno</button>
+          <button className="h-11 rounded-lg bg-navy px-5 font-semibold text-white">Enregistrer</button>
           <Link href={`/horarios?semana=${lunes}`} className="flex h-11 items-center px-2 text-sm text-tenue">
-            Cancelar
+            Annuler
           </Link>
           {params.error === "horas" && (
-            <p className="w-full text-sm text-[#a32020]">La hora de salida tiene que ser después de la de entrada.</p>
+            <p className="w-full text-sm text-[#a32020]">L’heure de départ doit être après l’heure d’arrivée.</p>
           )}
         </form>
       )}
@@ -137,14 +137,14 @@ export default async function HorariosPage({
         <div className="flex flex-wrap justify-between gap-2">
           <h2 className="flex items-center gap-2 text-[17px] font-semibold">
             <span className="h-2 w-2 rounded-full bg-[#22a05b]" />
-            Hoy en tienda · {nombreDia(fechaHoy)} {numeroDia(fechaHoy)}
+            Aujourd’hui en magasin · {nombreDia(fechaHoy)} {numeroDia(fechaHoy)}
           </h2>
           <span className="text-[13px] text-tenue">
-            {turnosHoy.length === 1 ? "1 turno programado" : `${turnosHoy.length} turnos programados`}
+            {turnosHoy.length === 1 ? "1 horaire prévu" : `${turnosHoy.length} horaires prévus`}
           </span>
         </div>
         {turnosHoy.length === 0 ? (
-          <p className="rounded-xl border border-borde bg-white p-4 text-tenue">No hay turnos para hoy.</p>
+          <p className="rounded-xl border border-borde bg-white p-4 text-tenue">Aucun horaire aujourd’hui.</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {turnosHoy.map((t) => {
@@ -169,7 +169,7 @@ export default async function HorariosPage({
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-[17px] font-semibold">Tablero semanal</h2>
+        <h2 className="text-[17px] font-semibold">Planning de la semaine</h2>
         <div className="overflow-x-auto">
           <div className="grid min-w-[960px] grid-cols-7 gap-2.5">
             {dias.map((fecha, i) => {
@@ -185,7 +185,7 @@ export default async function HorariosPage({
                   <div className="flex items-start justify-between gap-1">
                     <span className="flex flex-col items-start gap-1 text-xs font-semibold tracking-wide text-tenue">
                       {DIAS[i]}
-                      {esHoy && <span className="rounded bg-navy px-1.5 py-0.5 text-[10px] text-white">HOY</span>}
+                      {esHoy && <span className="rounded bg-navy px-1.5 py-0.5 text-[10px] text-white">AUJ.</span>}
                     </span>
                     <span className="text-2xl leading-none font-bold">{numeroDia(fecha)}</span>
                   </div>
@@ -198,7 +198,7 @@ export default async function HorariosPage({
                       {esAdmin && (
                         <form action={eliminarTurno} className="absolute top-1 right-1">
                           <input type="hidden" name="id" value={t.id} />
-                          <button aria-label={`Quitar turno de ${t.nombre}`} className="h-6 w-6 rounded text-tenue hover:bg-white hover:text-[#a32020]">
+                          <button aria-label={`Supprimer l’horaire de ${t.nombre}`} className="h-6 w-6 rounded text-tenue hover:bg-white hover:text-[#a32020]">
                             ×
                           </button>
                         </form>
@@ -212,7 +212,7 @@ export default async function HorariosPage({
                         esHoy ? "bg-navy text-white" : "border border-borde"
                       }`}
                     >
-                      + Turno
+                      + Horaire
                     </Link>
                   )}
                 </div>

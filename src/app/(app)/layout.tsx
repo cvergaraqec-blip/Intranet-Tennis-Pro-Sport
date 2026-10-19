@@ -30,10 +30,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </span>
           <span className="flex min-w-0 flex-1 flex-col">
             <span className="truncate text-sm font-semibold">{perfil.nombre}</span>
-            <span className="text-xs text-tenue">{esAdmin ? "Administrador" : "Empleado"}</span>
+            <span className="text-xs text-tenue">{esAdmin ? "Administrateur" : "Employé"}</span>
           </span>
           <form action={cerrarSesion}>
-            <button className="rounded-md px-2 py-1 text-xs text-tenue hover:bg-white">Salir</button>
+            <button className="rounded-md px-2 py-1 text-xs text-tenue hover:bg-white">Quitter</button>
           </form>
         </div>
       </aside>

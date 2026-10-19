@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { obtenerPerfil } from "@/lib/perfil";
-import { CATEGORIAS, type Producto } from "@/lib/inventario";
+import { CATEGORIAS, NOMBRE_CATEGORIA, type Producto } from "@/lib/inventario";
 import { createClient } from "@/lib/supabase/server";
 import { IconoBuscar } from "@/components/iconos";
 import { agregarProducto, ajustarStock, eliminarProducto } from "./actions";
@@ -41,37 +41,39 @@ export default async function InventarioPage({
     <section className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Inventario de Tienda</h1>
-          <p className="mt-1 text-[15px] text-tenue">Control de existencias rápido en mostrador</p>
+          <h1 className="text-3xl font-bold">Inventaire du magasin</h1>
+          <p className="mt-1 text-[15px] text-tenue">Contrôle rapide des stocks au comptoir</p>
         </div>
         {esAdmin && (
           <details className="group relative">
             <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg bg-acento px-5 font-semibold">
-              + Agregar producto
+              + Ajouter un produit
             </summary>
             <form
               action={agregarProducto}
               className="absolute right-0 z-10 mt-2 grid w-[min(92vw,420px)] gap-3 rounded-xl border border-borde bg-white p-4 shadow-lg"
             >
               <label className="flex flex-col gap-1 text-sm font-medium">
-                Nombre
+                Nom
                 <input name="nombre" required className={campo} />
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <label className="flex flex-col gap-1 text-sm font-medium">
-                  Código
+                  Code
                   <input name="codigo" className={campo} />
                 </label>
                 <label className="flex flex-col gap-1 text-sm font-medium">
                   Variante
-                  <input name="variante" placeholder="Grip 3, Blanco…" className={campo} />
+                  <input name="variante" placeholder="Grip 3, Blanc…" className={campo} />
                 </label>
               </div>
               <label className="flex flex-col gap-1 text-sm font-medium">
-                Categoría
+                Catégorie
                 <select name="categoria" className={campo}>
                   {CATEGORIAS.map((c) => (
-                    <option key={c}>{c}</option>
+                    <option key={c} value={c}>
+                      {NOMBRE_CATEGORIA[c]}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -81,11 +83,11 @@ export default async function InventarioPage({
                   <input name="stock" type="number" min="0" defaultValue="0" className={campo} />
                 </label>
                 <label className="flex flex-col gap-1 text-sm font-medium">
-                  Avisar bajo
+                  Alerte stock bas
                   <input name="minimo" type="number" min="0" defaultValue="1" className={campo} />
                 </label>
               </div>
-              <button className="h-11 rounded-lg bg-navy font-semibold text-white">Guardar</button>
+              <button className="h-11 rounded-lg bg-navy font-semibold text-white">Enregistrer</button>
             </form>
           </details>
         )}
@@ -98,8 +100,8 @@ export default async function InventarioPage({
           type="search"
           name="q"
           defaultValue={q}
-          aria-label="Buscar producto"
-          placeholder="Buscar por producto o código…"
+          aria-label="Rechercher un produit"
+          placeholder="Rechercher par produit ou code…"
           className="flex-1 bg-transparent text-base outline-none"
         />
       </form>
@@ -113,7 +115,7 @@ export default async function InventarioPage({
               cat === c ? "bg-navy font-semibold text-white" : "border border-borde bg-white"
             }`}
           >
-            {c || "Todos"}
+            {c ? NOMBRE_CATEGORIA[c] : "Tous"}
           </Link>
         ))}
       </div>
@@ -122,12 +124,12 @@ export default async function InventarioPage({
         <table className="w-full min-w-[820px] border-collapse text-[15px]">
           <thead>
             <tr className="text-left text-xs tracking-wide text-tenue">
-              <th className="px-5 py-4 font-semibold">CÓDIGO</th>
-              <th className="px-3 py-4 font-semibold">PRODUCTO</th>
+              <th className="px-5 py-4 font-semibold">CODE</th>
+              <th className="px-3 py-4 font-semibold">PRODUIT</th>
               <th className="px-3 py-4 font-semibold">VARIANTE</th>
-              <th className="px-3 py-4 font-semibold">ESTADO</th>
+              <th className="px-3 py-4 font-semibold">STATUT</th>
               <th className="px-3 py-4 text-center font-semibold">EN STOCK</th>
-              <th className="px-5 py-4 text-center font-semibold">AJUSTE RÁPIDO</th>
+              <th className="px-5 py-4 text-center font-semibold">AJUSTEMENT RAPIDE</th>
             </tr>
           </thead>
           <tbody>
@@ -142,7 +144,7 @@ export default async function InventarioPage({
                     {bajo ? (
                       <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#fde7e7] px-2.5 py-1 text-[13px] font-semibold text-[#a32020]">
                         <span className="h-1.5 w-1.5 rounded-full bg-[#d23b3b]" />
-                        Bajo / Agotado
+                        Bas / Épuisé
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 rounded-lg bg-[#dff6ea] px-2.5 py-1 text-[13px] font-semibold text-[#136b3e]">
@@ -160,7 +162,7 @@ export default async function InventarioPage({
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="-1" />
                         <button
-                          aria-label={`Restar uno a ${p.nombre}`}
+                          aria-label={`Retirer un ${p.nombre}`}
                           disabled={p.stock === 0}
                           className="h-11 w-11 rounded-lg bg-suave text-xl disabled:opacity-40"
                         >
@@ -170,15 +172,15 @@ export default async function InventarioPage({
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="1" />
-                        <button aria-label={`Sumar uno a ${p.nombre}`} className="h-11 w-11 rounded-lg bg-navy text-xl text-white">
+                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-11 w-11 rounded-lg bg-navy text-xl text-white">
                           +
                         </button>
                       </form>
                       {esAdmin && (
                         <form action={eliminarProducto}>
                           <input type="hidden" name="id" value={p.id} />
-                          <button aria-label={`Eliminar ${p.nombre}`} className="ml-1 h-11 rounded-lg px-2 text-sm text-tenue hover:text-[#a32020]">
-                            Quitar
+                          <button aria-label={`Supprimer ${p.nombre}`} className="ml-1 h-11 rounded-lg px-2 text-sm text-tenue hover:text-[#a32020]">
+                            Supprimer
                           </button>
                         </form>
                       )}
@@ -190,7 +192,7 @@ export default async function InventarioPage({
             {productos.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-5 py-10 text-center text-tenue">
-                  {q || cat ? "No hay productos que coincidan." : "Todavía no hay productos. Agrega el primero."}
+                  {q || cat ? "Aucun produit ne correspond." : "Aucun produit pour l’instant. Ajoutez le premier."}
                 </td>
               </tr>
             )}

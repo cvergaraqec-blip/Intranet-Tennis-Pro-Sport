@@ -1,11 +1,11 @@
 // Fechas como texto "AAAA-MM-DD", calculadas en la hora de Chile.
 const ZONA = "America/Santiago";
 
-export const DIAS = ["LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"];
-const DIAS_TITULO = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+export const DIAS = ["LUNDI", "MARDI", "MERCREDI", "JEUDI", "VENDREDI", "SAMEDI", "DIMANCHE"];
+const DIAS_TITULO = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+  "janvier", "février", "mars", "avril", "mai", "juin",
+  "juillet", "août", "septembre", "octobre", "novembre", "décembre",
 ];
 
 export function hoy(): string {
@@ -54,8 +54,8 @@ export function rangoSemana(lunes: string) {
   const mesA = MESES[a.getUTCMonth()];
   const mesB = MESES[b.getUTCMonth()];
   return mesA === mesB
-    ? `${a.getUTCDate()} – ${b.getUTCDate()} de ${mesB}`
-    : `${a.getUTCDate()} de ${mesA} – ${b.getUTCDate()} de ${mesB}`;
+    ? `${a.getUTCDate()} – ${b.getUTCDate()} ${mesB}`
+    : `${a.getUTCDate()} ${mesA} – ${b.getUTCDate()} ${mesB}`;
 }
 
 export function hora(t: string) {

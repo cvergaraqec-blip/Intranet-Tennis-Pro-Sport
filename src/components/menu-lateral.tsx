@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { IconoEmpleados, IconoHorarios, IconoInventario } from "./iconos";
 
 const enlaces = [
-  { href: "/inventario", texto: "Inventario", Icono: IconoInventario, soloAdmin: false },
-  { href: "/horarios", texto: "Horarios", Icono: IconoHorarios, soloAdmin: false },
-  { href: "/admin/empleados", texto: "Empleados", Icono: IconoEmpleados, soloAdmin: true },
+  { href: "/inventario", texto: "Inventaire", Icono: IconoInventario, soloAdmin: false },
+  { href: "/horarios", texto: "Horaires", Icono: IconoHorarios, soloAdmin: false },
+  { href: "/admin/empleados", texto: "Employés", Icono: IconoEmpleados, soloAdmin: true },
 ];
 
 export function MenuLateral({ esAdmin }: { esAdmin: boolean }) {

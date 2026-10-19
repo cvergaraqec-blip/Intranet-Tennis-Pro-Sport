@@ -3,8 +3,8 @@ import { obtenerPerfil } from "@/lib/perfil";
 import { IconoHorarios, IconoInventario } from "@/components/iconos";
 
 const accesos = [
-  { href: "/inventario", texto: "Inventario", Icono: IconoInventario },
-  { href: "/horarios", texto: "Horarios", Icono: IconoHorarios },
+  { href: "/inventario", texto: "Inventaire", Icono: IconoInventario },
+  { href: "/horarios", texto: "Horaires", Icono: IconoHorarios },
 ];
 
 export default async function Inicio() {
@@ -14,8 +14,8 @@ export default async function Inicio() {
   return (
     <section className="mx-auto flex max-w-4xl flex-col items-center gap-10 py-8 md:py-14">
       <div className="text-center">
-        <h1 className="text-4xl font-bold">Hola, {nombre}</h1>
-        <p className="mt-2 text-lg text-tenue">¿Qué quieres revisar?</p>
+        <h1 className="text-4xl font-bold">Bonjour, {nombre}</h1>
+        <p className="mt-2 text-lg text-tenue">Que voulez-vous consulter ?</p>
       </div>
       <div className="grid w-full gap-6 sm:grid-cols-2">
         {accesos.map(({ href, texto, Icono }) => (

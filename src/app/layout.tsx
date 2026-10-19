@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Intranet Tennis ProSport",
-  description: "Inventario y horarios del personal",
+  description: "Inventaire et horaires du personnel",
 };
 
 export default function RootLayout({
@@ -12,7 +12,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="fr">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
