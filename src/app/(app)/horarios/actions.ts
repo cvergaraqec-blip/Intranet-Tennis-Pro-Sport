@@ -11,7 +11,7 @@ export async function agregarTurno(formData: FormData) {
   const fecha = String(formData.get("fecha") ?? "");
   const inicio = String(formData.get("inicio") ?? "");
   const fin = String(formData.get("fin") ?? "");
-  const empleado = String(formData.get("empleado_id") ?? "");
+  const empleado = Number(formData.get("empleado_id"));
   if (!esFecha(fecha) || !empleado || !inicio || !fin) return;
 
   const semana = lunesDe(fecha);

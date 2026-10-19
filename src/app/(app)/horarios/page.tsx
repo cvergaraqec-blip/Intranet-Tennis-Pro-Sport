@@ -11,17 +11,20 @@ type Turno = {
   fecha: string;
   inicio: string;
   fin: string;
-  empleado_id: string;
+  empleado_id: number;
   nombre: string;
 };
 
+type Ficha = { nombre: string; apellido: string };
+
 type FilaTurno = Omit<Turno, "nombre"> & {
-  perfiles: { nombre: string } | { nombre: string }[] | null;
+  empleados: Ficha | Ficha[] | null;
 };
 
 function aTurno(f: FilaTurno): Turno {
-  const perfil = Array.isArray(f.perfiles) ? f.perfiles[0] : f.perfiles;
-  return { ...f, nombre: perfil?.nombre ?? "" };
+  const { empleados, ...resto } = f;
+  const ficha = Array.isArray(empleados) ? empleados[0] : empleados;
+  return { ...resto, nombre: ficha ? `${ficha.nombre} ${ficha.apellido}` : "" };
 }
 
 function iniciales(nombre: string) {
@@ -52,13 +55,13 @@ export default async function HorariosPage({
   const nuevo = esFecha(params.nuevo) ? params.nuevo : null;
 
   const supabase = await createClient();
-  const columnas = "id, fecha, inicio, fin, empleado_id, perfiles(nombre)";
+  const columnas = "id, fecha, inicio, fin, empleado_id, empleados(nombre, apellido)";
   const [{ data: deSemana }, { data: deHoy }, { data: empleados }] = await Promise.all([
     supabase.from("turnos").select(columnas).gte("fecha", lunes).lte("fecha", domingo).order("inicio"),
     supabase.from("turnos").select(columnas).eq("fecha", fechaHoy).order("inicio"),
     esAdmin
-      ? supabase.from("perfiles").select("id, nombre").order("nombre")
-      : Promise.resolve({ data: [] as { id: string; nombre: string }[] }),
+      ? supabase.from("empleados").select("id, numero, nombre, apellido").order("nombre")
+      : Promise.resolve({ data: [] as { id: number; numero: string; nombre: string; apellido: string }[] }),
   ]);
   const turnosSemana = ((deSemana ?? []) as FilaTurno[]).map(aTurno);
   const turnosHoy = ((deHoy ?? []) as FilaTurno[]).map(aTurno);
@@ -99,14 +102,24 @@ export default async function HorariosPage({
         </div>
       </div>
 
-      {esAdmin && nuevo && (
+      {esAdmin && nuevo && (empleados ?? []).length === 0 && (
+        <p className="rounded-xl border border-borde bg-white p-4 text-tenue">
+          Ajoutez d’abord un employé dans{" "}
+          <Link href="/admin/empleados" className="font-semibold text-navy underline">
+            Employés
+          </Link>
+          .
+        </p>
+      )}
+
+      {esAdmin && nuevo && (empleados ?? []).length > 0 && (
         <form action={agregarTurno} className="flex flex-wrap items-end gap-3 rounded-xl border border-borde bg-white p-4">
           <label className="flex min-w-48 flex-1 flex-col gap-1 text-sm font-medium">
             Employé
             <select name="empleado_id" required className={campo}>
               {(empleados ?? []).map((e) => (
                 <option key={e.id} value={e.id}>
-                  {e.nombre}
+                  {e.nombre} {e.apellido} ({e.numero})
                 </option>
               ))}
             </select>
