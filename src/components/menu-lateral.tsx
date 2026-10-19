@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconoEmpleados, IconoHorarios, IconoInventario } from "./iconos";
+import { IconoEmpleados, IconoHorarios, IconoInventario, IconoReloj } from "./iconos";
 
 const enlaces = [
   { href: "/inventario", texto: "Inventaire", Icono: IconoInventario, soloAdmin: false },
   { href: "/horarios", texto: "Horaires", Icono: IconoHorarios, soloAdmin: false },
   { href: "/admin/empleados", texto: "Employés", Icono: IconoEmpleados, soloAdmin: true },
+  { href: "/pointeuse", texto: "Pointeuse", Icono: IconoReloj, soloAdmin: false },
 ];
 
 export function MenuLateral({ esAdmin }: { esAdmin: boolean }) {

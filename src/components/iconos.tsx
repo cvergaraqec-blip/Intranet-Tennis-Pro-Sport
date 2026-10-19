@@ -50,3 +50,30 @@ export function Logo({ className = "" }: Props) {
     </span>
   );
 }
+
+export function IconoReloj({ className }: Props) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="2" />
+      <path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3" />
+    </svg>
+  );
+}
+
+export function IconoEntrada({ className }: Props) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M14 3h5a2 2 0 012 2v14a2 2 0 01-2 2h-5" />
+      <path d="M3 12h12M11 8l4 4-4 4" />
+    </svg>
+  );
+}
+
+export function IconoSalida({ className }: Props) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 3H5a2 2 0 00-2 2v14a2 2 0 002 2h5" />
+      <path d="M9 12h12M17 8l4 4-4 4" />
+    </svg>
+  );
+}
