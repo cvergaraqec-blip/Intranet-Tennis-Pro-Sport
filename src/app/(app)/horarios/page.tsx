@@ -36,8 +36,9 @@ function nombreCorto(nombre: string) {
   return segundo ? `${primero} ${segundo[0]}.` : (primero ?? "");
 }
 
-type Marca = { empleado_id: number; tipo: "entrada" | "salida"; momento: string };
+type Marca = { empleado_id: number; tipo: "entrada" | "salida"; momento: string; empleados: Ficha | Ficha[] | null };
 type Pointage = { entrada?: string; salida?: string };
+type PointageDia = Pointage & { empleado_id: number; fecha: string; nombre: string };
 
 const ZONA = "America/Santiago";
 const diaChile = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
@@ -45,12 +46,15 @@ const horaChile = new Intl.DateTimeFormat("en-GB", { timeZone: ZONA, hour: "2-di
 
 // Primera entrada y última salida de cada empleado por día.
 function agruparMarcas(marcas: Marca[]) {
-  const mapa = new Map<string, Pointage>();
+  const mapa = new Map<string, PointageDia>();
   for (const m of marcas) {
-    const fecha = new Date(m.momento);
-    const clave = `${m.empleado_id}|${diaChile.format(fecha)}`;
-    const hhmm = horaChile.format(fecha);
-    const p = mapa.get(clave) ?? {};
+    const momento = new Date(m.momento);
+    const fecha = diaChile.format(momento);
+    const clave = `${m.empleado_id}|${fecha}`;
+    const hhmm = horaChile.format(momento);
+    const ficha = Array.isArray(m.empleados) ? m.empleados[0] : m.empleados;
+    const nombre = ficha ? `${ficha.nombre} ${ficha.apellido}` : "";
+    const p = mapa.get(clave) ?? { empleado_id: m.empleado_id, fecha, nombre };
     if (m.tipo === "entrada" && (!p.entrada || hhmm < p.entrada)) p.entrada = hhmm;
     if (m.tipo === "salida" && (!p.salida || hhmm > p.salida)) p.salida = hhmm;
     mapa.set(clave, p);
@@ -99,14 +103,20 @@ export default async function HorariosPage({
     // Margen de un día a cada lado por la diferencia horaria con UTC.
     supabase
       .from("marcajes")
-      .select("empleado_id, tipo, momento")
+      .select("empleado_id, tipo, momento, empleados(nombre, apellido)")
       .gte("momento", `${sumarDias(lunes, -1)}T00:00:00Z`)
       .lt("momento", `${sumarDias(domingo, 2)}T00:00:00Z`),
   ]);
   const pointages = agruparMarcas((deMarcas ?? []) as Marca[]);
-  const pointage = (t: Turno) => pointages.get(`${t.empleado_id}|${t.fecha}`) ?? {};
+  const pointage = (t: Turno): Pointage => pointages.get(`${t.empleado_id}|${t.fecha}`) ?? {};
+  // Marcas de gente que no tenía turno ese día.
+  const sinHorario = (fecha: string, turnos: Turno[]) =>
+    [...pointages.values()].filter(
+      (p) => p.fecha === fecha && !turnos.some((t) => t.fecha === fecha && t.empleado_id === p.empleado_id),
+    );
   const turnosSemana = ((deSemana ?? []) as FilaTurno[]).map(aTurno);
   const turnosHoy = ((deHoy ?? []) as FilaTurno[]).map(aTurno);
+  const extrasHoy = sinHorario(fechaHoy, turnosHoy);
 
   const estado = (t: Turno) => {
     const p = pointage(t);
@@ -205,7 +215,7 @@ export default async function HorariosPage({
             {turnosHoy.length === 1 ? "1 horaire prévu" : `${turnosHoy.length} horaires prévus`}
           </span>
         </div>
-        {turnosHoy.length === 0 ? (
+        {turnosHoy.length === 0 && extrasHoy.length === 0 ? (
           <p className="rounded-xl border border-borde bg-white p-4 text-tenue">Aucun horaire aujourd’hui.</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -226,6 +236,22 @@ export default async function HorariosPage({
                 </div>
               );
             })}
+            {extrasHoy.map((p) => (
+              <div key={p.empleado_id} className="flex items-center gap-3 rounded-xl border border-dashed border-borde bg-white px-3.5 py-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-acento">
+                  {iniciales(p.nombre)}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate font-semibold">{p.nombre}</span>
+                  <span className={`text-xs ${p.salida ? "text-tenue" : "text-[#136b3e]"}`}>
+                    {p.salida ? `Pointé ${p.entrada ?? "--:--"} – ${p.salida}` : `En magasin depuis ${p.entrada}`}
+                  </span>
+                </span>
+                <span className="whitespace-nowrap rounded-lg bg-[#fff4e0] px-2.5 py-1.5 text-xs font-semibold text-[#8a5a00]">
+                  Sans horaire
+                </span>
+              </div>
+            ))}
           </div>
         )}
       </section>
@@ -266,6 +292,13 @@ export default async function HorariosPage({
                           </button>
                         </form>
                       )}
+                    </div>
+                  ))}
+                  {sinHorario(fecha, turnos).map((p) => (
+                    <div key={`x${p.empleado_id}`} className="flex flex-col gap-0.5 rounded-lg border border-dashed border-borde px-2.5 py-2">
+                      <span className="truncate text-sm font-semibold">{nombreCorto(p.nombre)}</span>
+                      <span className="text-[12px] text-[#8a5a00]">Sans horaire</span>
+                      <Pointe p={p} pasado={false} />
                     </div>
                   ))}
                   {esAdmin && (
