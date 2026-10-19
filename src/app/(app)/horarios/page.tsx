@@ -91,7 +91,7 @@ export default async function HorariosPage({
           {esAdmin && (
             <Link
               href={`/horarios?semana=${lunes}&nuevo=${dias.includes(fechaHoy) ? fechaHoy : lunes}`}
-              className="flex h-12 items-center rounded-lg bg-lima px-5 font-semibold"
+              className="flex h-12 items-center rounded-lg bg-acento px-5 font-semibold"
             >
               + Agregar turno
             </Link>
@@ -151,7 +151,7 @@ export default async function HorariosPage({
               const e = estado(t);
               return (
                 <div key={t.id} className="flex items-center gap-3 rounded-xl border border-borde bg-white px-3.5 py-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-lima">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy text-sm font-semibold text-acento">
                     {iniciales(t.nombre)}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">

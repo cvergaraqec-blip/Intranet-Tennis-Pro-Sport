@@ -37,11 +37,16 @@ export function IconoBuscar({ className }: Props) {
   );
 }
 
-export function Logo({ className }: Props) {
+// Logotipo PROSPORT; va sobre fondo oscuro.
+export function Logo({ className = "" }: Props) {
   return (
-    <svg className={className} viewBox="0 0 28 28" aria-hidden="true">
-      <circle cx="14" cy="14" r="12" fill="#ddf06a" />
-      <path d="M5 8c5 4 5 8 0 12M23 8c-5 4-5 8 0 12" fill="none" stroke="#0f1b2d" strokeWidth="2" />
-    </svg>
+    <span
+      className={`font-[family-name:'Exo_2'] text-acento italic leading-none tracking-tight ${className}`}
+      aria-label="Tennis ProSport"
+      role="img"
+    >
+      <span className="font-extrabold">PRO</span>
+      <span className="font-light">SPORT</span>
+    </span>
   );
 }

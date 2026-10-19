@@ -18,7 +18,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,300;1,800&family=Outfit:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>

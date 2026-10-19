@@ -13,10 +13,7 @@ export default async function LoginPage({
   return (
     <main className="flex min-h-screen flex-wrap">
       <div className="flex min-h-72 flex-[1_1_420px] flex-col justify-between gap-12 bg-navy px-8 py-12 text-white md:px-14 md:py-16">
-        <div className="flex items-center gap-3">
-          <Logo className="h-9 w-9" />
-          <span className="text-xl font-semibold">Tennis ProSport</span>
-        </div>
+        <Logo className="text-4xl" />
         <div className="flex max-w-md flex-col gap-4">
           <h1 className="text-4xl leading-tight font-bold md:text-5xl">Intranet del equipo</h1>
           <p className="text-lg text-[#c9d3e3]">Inventario de la tienda y turnos del personal, en un solo lugar.</p>

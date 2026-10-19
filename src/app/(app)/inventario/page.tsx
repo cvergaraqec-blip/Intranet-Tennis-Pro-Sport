@@ -46,7 +46,7 @@ export default async function InventarioPage({
         </div>
         {esAdmin && (
           <details className="group relative">
-            <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg bg-lima px-5 font-semibold">
+            <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg bg-acento px-5 font-semibold">
               + Agregar producto
             </summary>
             <form
