@@ -36,6 +36,40 @@ function nombreCorto(nombre: string) {
   return segundo ? `${primero} ${segundo[0]}.` : (primero ?? "");
 }
 
+type Marca = { empleado_id: number; tipo: "entrada" | "salida"; momento: string };
+type Pointage = { entrada?: string; salida?: string };
+
+const ZONA = "America/Santiago";
+const diaChile = new Intl.DateTimeFormat("en-CA", { timeZone: ZONA });
+const horaChile = new Intl.DateTimeFormat("en-GB", { timeZone: ZONA, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+
+// Primera entrada y última salida de cada empleado por día.
+function agruparMarcas(marcas: Marca[]) {
+  const mapa = new Map<string, Pointage>();
+  for (const m of marcas) {
+    const fecha = new Date(m.momento);
+    const clave = `${m.empleado_id}|${diaChile.format(fecha)}`;
+    const hhmm = horaChile.format(fecha);
+    const p = mapa.get(clave) ?? {};
+    if (m.tipo === "entrada" && (!p.entrada || hhmm < p.entrada)) p.entrada = hhmm;
+    if (m.tipo === "salida" && (!p.salida || hhmm > p.salida)) p.salida = hhmm;
+    mapa.set(clave, p);
+  }
+  return mapa;
+}
+
+// Línea con lo marcado en la Pointeuse bajo cada turno del tablero.
+function Pointe({ p, pasado }: { p: Pointage; pasado: boolean }) {
+  if (!p.entrada && !p.salida) {
+    return pasado ? <span className="text-[12px] font-semibold text-[#a32020]">Non pointé</span> : null;
+  }
+  return (
+    <span className="text-[12px] font-semibold text-[#136b3e]">
+      ✓ {p.salida ? `${p.entrada ?? "--:--"} – ${p.salida}` : `Arrivée ${p.entrada}`}
+    </span>
+  );
+}
+
 const campo = "h-11 rounded-lg border border-borde bg-white px-3 text-[15px]";
 
 export default async function HorariosPage({
@@ -56,20 +90,32 @@ export default async function HorariosPage({
 
   const supabase = await createClient();
   const columnas = "id, fecha, inicio, fin, empleado_id, empleados(nombre, apellido)";
-  const [{ data: deSemana }, { data: deHoy }, { data: empleados }] = await Promise.all([
+  const [{ data: deSemana }, { data: deHoy }, { data: empleados }, { data: deMarcas }] = await Promise.all([
     supabase.from("turnos").select(columnas).gte("fecha", lunes).lte("fecha", domingo).order("inicio"),
     supabase.from("turnos").select(columnas).eq("fecha", fechaHoy).order("inicio"),
     esAdmin
       ? supabase.from("empleados").select("id, numero, nombre, apellido").order("nombre")
       : Promise.resolve({ data: [] as { id: number; numero: string; nombre: string; apellido: string }[] }),
+    // Margen de un día a cada lado por la diferencia horaria con UTC.
+    supabase
+      .from("marcajes")
+      .select("empleado_id, tipo, momento")
+      .gte("momento", `${sumarDias(lunes, -1)}T00:00:00Z`)
+      .lt("momento", `${sumarDias(domingo, 2)}T00:00:00Z`),
   ]);
+  const pointages = agruparMarcas((deMarcas ?? []) as Marca[]);
+  const pointage = (t: Turno) => pointages.get(`${t.empleado_id}|${t.fecha}`) ?? {};
   const turnosSemana = ((deSemana ?? []) as FilaTurno[]).map(aTurno);
   const turnosHoy = ((deHoy ?? []) as FilaTurno[]).map(aTurno);
 
   const estado = (t: Turno) => {
-    if (ahora < hora(t.inicio)) return { texto: `Arrive à ${hora(t.inicio)}`, color: "text-tenue" };
-    if (ahora < hora(t.fin)) return { texto: "En magasin", color: "text-[#136b3e]" };
-    return { texto: "Service terminé", color: "text-tenue" };
+    const p = pointage(t);
+    if (p.salida && (!p.entrada || p.salida >= p.entrada))
+      return { texto: `Pointé ${p.entrada ?? "--:--"} – ${p.salida}`, color: "text-tenue" };
+    if (p.entrada) return { texto: `En magasin depuis ${p.entrada}`, color: "text-[#136b3e]" };
+    if (t.fecha === fechaHoy && ahora >= hora(t.fin)) return { texto: "Pas de pointage", color: "text-[#a32020]" };
+    if (t.fecha === fechaHoy && ahora >= hora(t.inicio)) return { texto: "En retard, pas encore pointé", color: "text-[#a32020]" };
+    return { texto: `Arrive à ${hora(t.inicio)}`, color: "text-tenue" };
   };
 
   return (
@@ -211,6 +257,7 @@ export default async function HorariosPage({
                       <span className="text-[13px] text-navy-claro">
                         {hora(t.inicio)} – {hora(t.fin)}
                       </span>
+                      <Pointe p={pointage(t)} pasado={t.fecha < fechaHoy || (t.fecha === fechaHoy && ahora >= hora(t.fin))} />
                       {esAdmin && (
                         <form action={eliminarTurno} className="absolute top-1 right-1">
                           <input type="hidden" name="id" value={t.id} />
