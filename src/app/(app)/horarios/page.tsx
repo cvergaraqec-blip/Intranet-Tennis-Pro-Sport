@@ -116,7 +116,10 @@ export default async function HorariosPage({
         <form action={agregarTurno} className="flex flex-wrap items-end gap-3 rounded-xl border border-borde bg-white p-4">
           <label className="flex min-w-48 flex-1 flex-col gap-1 text-sm font-medium">
             Employé
-            <select name="empleado_id" required className={campo}>
+            <select name="empleado_id" required defaultValue="" className={campo}>
+              <option value="" disabled>
+                Choisir un employé
+              </option>
               {(empleados ?? []).map((e) => (
                 <option key={e.id} value={e.id}>
                   {e.nombre} {e.apellido} ({e.numero})
