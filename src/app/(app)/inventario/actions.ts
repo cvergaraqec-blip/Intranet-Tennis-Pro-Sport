@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { exigirAdmin } from "@/lib/perfil";
-import { CATEGORIAS, categoriaDesde } from "@/lib/inventario";
+import { categoriaDesde } from "@/lib/inventario";
 import { leerCsv, normalizar } from "@/lib/csv";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,7 +24,7 @@ export async function agregarProducto(formData: FormData) {
   const { error } = await supabase.from("productos").insert({
     sku: texto("sku"),
     nombre: texto("nombre"),
-    categoria: categoriaDesde(texto("categoria")) ?? CATEGORIAS[3],
+    categoria: categoriaDesde(texto("categoria")) ?? "Accesorios y Pelotas",
     color: texto("color"),
     talla: texto("talla"),
     upc: texto("upc"),

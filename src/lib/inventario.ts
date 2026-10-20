@@ -1,7 +1,8 @@
-export const CATEGORIAS = ["Raquetas", "Cordajes", "Grips", "Accesorios y Pelotas"] as const;
+export const CATEGORIAS = ["Shoes", "Raquetas", "Cordajes", "Grips", "Accesorios y Pelotas"] as const;
 
 // Nombre que se muestra en pantalla; en la base se guarda el valor original.
 export const NOMBRE_CATEGORIA: Record<string, string> = {
+  Shoes: "Shoes",
   Raquetas: "Raquettes",
   Cordajes: "Cordages",
   Grips: "Grips",
@@ -27,6 +28,7 @@ export type Producto = {
 // Acepta el nombre de la categoría en español o en francés.
 export function categoriaDesde(texto: string): Categoria | null {
   const t = texto.trim().toLowerCase();
+  if (["chaussures", "zapatillas", "zapatos"].includes(t)) return "Shoes";
   for (const c of CATEGORIAS) {
     if (c.toLowerCase() === t || NOMBRE_CATEGORIA[c].toLowerCase() === t) return c;
   }
