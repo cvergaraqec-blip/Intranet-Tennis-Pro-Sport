@@ -16,6 +16,18 @@ export type Producto = {
   nombre: string;
   categoria: Categoria;
   variante: string;
+  color: string;
+  talla: string;
+  upc: string;
   stock: number;
   minimo: number;
 };
+
+// Acepta el nombre de la categoría en español o en francés.
+export function categoriaDesde(texto: string): Categoria | null {
+  const t = texto.trim().toLowerCase();
+  for (const c of CATEGORIAS) {
+    if (c.toLowerCase() === t || NOMBRE_CATEGORIA[c].toLowerCase() === t) return c;
+  }
+  return null;
+}
