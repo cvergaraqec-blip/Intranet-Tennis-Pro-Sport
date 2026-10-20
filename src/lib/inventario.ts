@@ -19,6 +19,7 @@ export type Producto = {
   color: string;
   talla: string;
   upc: string;
+  sku: string;
   stock: number;
   minimo: number;
 };

@@ -26,12 +26,12 @@ export default async function InventarioPage({
   const supabase = await createClient();
   let consulta = supabase
     .from("productos")
-    .select("id, codigo, nombre, categoria, variante, color, talla, upc, stock, minimo")
+    .select("id, codigo, nombre, categoria, variante, color, talla, upc, sku, stock, minimo")
     .order("nombre");
   if (cat) consulta = consulta.eq("categoria", cat);
   if (q) {
     const limpio = q.replace(/[%,()]/g, " ");
-    consulta = consulta.or(`nombre.ilike.%${limpio}%,codigo.ilike.%${limpio}%,upc.ilike.%${limpio}%`);
+    consulta = consulta.or(`nombre.ilike.%${limpio}%,sku.ilike.%${limpio}%,upc.ilike.%${limpio}%`);
   }
   const { data } = await consulta;
   const productos = (data ?? []) as Producto[];
@@ -218,7 +218,7 @@ export default async function InventarioPage({
                   <td className="px-3 py-3">{p.color}</td>
                   <td className="px-3 py-3">{p.talla}</td>
                   <td className="px-3 py-3 font-mono text-[13px] text-tenue">{p.upc}</td>
-                  <td className="px-3 py-3 font-mono text-[13px] text-tenue">{p.codigo}</td>
+                  <td className="px-3 py-3 font-mono text-[13px] text-tenue">{p.sku}</td>
                   {esAdmin && (
                     <td className="px-5 py-2.5 text-right">
                       <form action={eliminarProducto}>

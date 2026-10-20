@@ -22,7 +22,7 @@ export async function agregarProducto(formData: FormData) {
 
   const supabase = await createClient();
   const { error } = await supabase.from("productos").insert({
-    codigo: texto("sku"),
+    sku: texto("sku"),
     nombre: texto("nombre"),
     categoria: categoriaDesde(texto("categoria")) ?? CATEGORIAS[3],
     color: texto("color"),

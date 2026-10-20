@@ -1,7 +1,11 @@
 -- Un mismo SKU puede tener varias tallas o colores: cada fila es una variante.
 -- La importación identifica el producto por UPC, o por SKU + talla + color si no hay UPC.
-drop index if exists public.productos_sku_unico;
 create unique index productos_upc_unico on public.productos (upc) where upc <> '';
+
+-- El índice único de codigo no se pudo borrar desde aquí; el SKU pasa a su
+-- propia columna sin restricción y codigo queda vacío.
+alter table public.productos add column sku text not null default '';
+update public.productos set sku = codigo, codigo = '' where codigo <> '';
 
 create or replace function public.importar_productos(filas jsonb)
 returns table (insertados int, actualizados int)
@@ -37,18 +41,18 @@ begin
       select id into v_id from productos where upc = v_upc;
     elsif v_sku <> '' then
       select id into v_id from productos
-      where codigo = v_sku and upc = '' and color = v_color and talla = v_talla
+      where sku = v_sku and upc = '' and color = v_color and talla = v_talla
       limit 1;
     end if;
 
     if v_id is null then
-      insert into productos (codigo, nombre, categoria, color, talla, upc, stock, minimo)
+      insert into productos (sku, nombre, categoria, color, talla, upc, stock, minimo)
       values (v_sku, f ->> 'nombre', v_categoria, v_color, v_talla, v_upc,
               greatest(coalesce((f ->> 'stock')::int, 0), 0), 1);
       insertados := insertados + 1;
     else
       update productos set
-        codigo = v_sku,
+        sku = v_sku,
         nombre = f ->> 'nombre',
         categoria = v_categoria,
         color = v_color,
