@@ -3,10 +3,16 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
+// Un identifiant sin "@" (por ejemplo "Admin") corresponde a una cuenta interna nombre@prosport.local.
+const DOMINIO_INTERNO = "prosport.local";
+
 export async function iniciarSesion(formData: FormData) {
+  const identifiant = String(formData.get("identifiant") ?? "").trim();
+  const email = identifiant.includes("@") ? identifiant : `${identifiant.toLowerCase()}@${DOMINIO_INTERNO}`;
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
-    email: String(formData.get("email") ?? ""),
+    email,
     password: String(formData.get("password") ?? ""),
   });
 
