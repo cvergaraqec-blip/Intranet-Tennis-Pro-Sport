@@ -3,7 +3,7 @@ import { obtenerPerfil } from "@/lib/perfil";
 import { CATEGORIAS, NOMBRE_CATEGORIA, type Producto } from "@/lib/inventario";
 import { createClient } from "@/lib/supabase/server";
 import { IconoBuscar } from "@/components/iconos";
-import { agregarProducto, ajustarStock, eliminarProducto, importarProductos } from "./actions";
+import { agregarProducto, eliminarProducto, importarProductos } from "./actions";
 
 const POR_PAGINA = [10, 25, 50, 100];
 
@@ -205,33 +205,11 @@ export default async function InventarioPage({
               return (
                 <tr key={p.id} className="border-t border-suave">
                   <td className="px-5 py-1.5 font-medium">{p.nombre}</td>
-                  <td className="px-3 py-1.5">
-                    <div className="flex items-center justify-center gap-1.5">
-                      <form action={ajustarStock}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <input type="hidden" name="delta" value="-1" />
-                        <button
-                          aria-label={`Retirer un ${p.nombre}`}
-                          disabled={p.stock === 0}
-                          className="h-6 w-6 rounded-md bg-suave text-sm disabled:opacity-40"
-                        >
-                          −
-                        </button>
-                      </form>
-                      <span
-                        title={bajo ? "Stock bas" : undefined}
-                        className={`min-w-8 text-center text-[13px] font-bold ${bajo ? "text-[#c02626]" : ""}`}
-                      >
-                        {p.stock}
-                      </span>
-                      <form action={ajustarStock}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <input type="hidden" name="delta" value="1" />
-                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-6 w-6 rounded-md bg-navy text-sm text-white">
-                          +
-                        </button>
-                      </form>
-                    </div>
+                  <td
+                    title={bajo ? "Stock bas" : undefined}
+                    className={`px-3 py-1.5 text-center font-bold ${bajo ? "text-[#c02626]" : ""}`}
+                  >
+                    {p.stock}
                   </td>
                   <td className="px-3 py-1.5">{p.color}</td>
                   <td className="px-3 py-1.5">{p.talla}</td>
