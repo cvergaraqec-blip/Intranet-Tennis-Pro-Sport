@@ -186,16 +186,16 @@ export default async function InventarioPage({
               const bajo = p.stock <= p.minimo;
               return (
                 <tr key={p.id} className="border-t border-suave">
-                  <td className="px-5 py-3 font-semibold">{p.nombre}</td>
+                  <td className="px-5 py-3 font-medium">{p.nombre}</td>
                   <td className="px-3 py-2.5">
-                    <div className="flex items-center justify-center gap-2">
+                    <div className="flex items-center justify-center gap-1.5">
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="-1" />
                         <button
                           aria-label={`Retirer un ${p.nombre}`}
                           disabled={p.stock === 0}
-                          className="h-9 w-9 rounded-lg bg-suave text-lg disabled:opacity-40"
+                          className="h-7 w-7 rounded-md bg-suave text-sm disabled:opacity-40"
                         >
                           −
                         </button>
@@ -209,7 +209,7 @@ export default async function InventarioPage({
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="1" />
-                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-9 w-9 rounded-lg bg-navy text-lg text-white">
+                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-7 w-7 rounded-md bg-navy text-sm text-white">
                           +
                         </button>
                       </form>
