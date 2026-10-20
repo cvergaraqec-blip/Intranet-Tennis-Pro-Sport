@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { IconoBuscar } from "@/components/iconos";
 import { agregarProducto, ajustarStock, eliminarProducto, importarProductos } from "./actions";
 
+const POR_PAGINA = [10, 25, 50, 100];
+
 const campo = "h-11 rounded-lg border border-borde bg-white px-3 text-[15px]";
 
 const MENSAJES_IMPORT: Record<string, string> = {
@@ -16,30 +18,40 @@ const MENSAJES_IMPORT: Record<string, string> = {
 export default async function InventarioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; cat?: string; import?: string; nuevos?: string; actualizados?: string; error?: string }>;
+  searchParams: Promise<{ q?: string; cat?: string; p?: string; por?: string; import?: string; nuevos?: string; actualizados?: string; error?: string }>;
 }) {
   const params = await searchParams;
   const { q = "", cat = "" } = params;
+  const porPagina = POR_PAGINA.includes(Number(params.por)) ? Number(params.por) : 25;
+  const pagina = Math.max(1, Math.floor(Number(params.p)) || 1);
   const perfil = await obtenerPerfil();
   const esAdmin = perfil.rol === "admin";
 
   const supabase = await createClient();
   let consulta = supabase
     .from("productos")
-    .select("id, codigo, nombre, categoria, variante, color, talla, upc, sku, stock, minimo")
-    .order("nombre");
+    .select("id, codigo, nombre, categoria, variante, color, talla, upc, sku, stock, minimo", { count: "exact" })
+    .order("nombre")
+    .order("id")
+    .range((pagina - 1) * porPagina, pagina * porPagina - 1);
   if (cat) consulta = consulta.eq("categoria", cat);
   if (q) {
     const limpio = q.replace(/[%,()]/g, " ");
     consulta = consulta.or(`nombre.ilike.%${limpio}%,sku.ilike.%${limpio}%,upc.ilike.%${limpio}%`);
   }
-  const { data } = await consulta;
+  const { data, count } = await consulta;
   const productos = (data ?? []) as Producto[];
+  const total = count ?? 0;
+  const paginas = Math.max(1, Math.ceil(total / porPagina));
 
-  const urlCategoria = (c: string) => {
+  const url = (cambios: { cat?: string; p?: number; por?: number }) => {
+    const c = cambios.cat ?? cat;
+    const n = cambios.por ?? porPagina;
     const p = new URLSearchParams();
     if (q) p.set("q", q);
     if (c) p.set("cat", c);
+    if (n !== 25) p.set("por", String(n));
+    if (cambios.p && cambios.p > 1) p.set("p", String(cambios.p));
     const s = p.toString();
     return s ? `/inventario?${s}` : "/inventario";
   };
@@ -149,6 +161,7 @@ export default async function InventarioPage({
       <form action="/inventario" className="flex h-12 items-center gap-2.5 rounded-xl border border-borde bg-white px-4">
         <IconoBuscar className="h-[18px] w-[18px] text-tenue" />
         {cat && <input type="hidden" name="cat" value={cat} />}
+        {porPagina !== 25 && <input type="hidden" name="por" value={porPagina} />}
         <input
           type="search"
           name="q"
@@ -163,7 +176,7 @@ export default async function InventarioPage({
         {["", ...CATEGORIAS].map((c) => (
           <Link
             key={c || "todos"}
-            href={urlCategoria(c)}
+            href={url({ cat: c })}
             className={`flex h-9 items-center rounded-lg px-4 text-sm ${
               cat === c ? "bg-navy font-semibold text-white" : "border border-borde bg-white"
             }`}
@@ -191,8 +204,8 @@ export default async function InventarioPage({
               const bajo = p.stock <= p.minimo;
               return (
                 <tr key={p.id} className="border-t border-suave">
-                  <td className="px-5 py-3 font-medium">{p.nombre}</td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-5 py-1.5 font-medium">{p.nombre}</td>
+                  <td className="px-3 py-1.5">
                     <div className="flex items-center justify-center gap-1.5">
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
@@ -200,7 +213,7 @@ export default async function InventarioPage({
                         <button
                           aria-label={`Retirer un ${p.nombre}`}
                           disabled={p.stock === 0}
-                          className="h-7 w-7 rounded-md bg-suave text-sm disabled:opacity-40"
+                          className="h-6 w-6 rounded-md bg-suave text-sm disabled:opacity-40"
                         >
                           −
                         </button>
@@ -214,21 +227,21 @@ export default async function InventarioPage({
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="1" />
-                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-7 w-7 rounded-md bg-navy text-sm text-white">
+                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-6 w-6 rounded-md bg-navy text-sm text-white">
                           +
                         </button>
                       </form>
                     </div>
                   </td>
-                  <td className="px-3 py-3">{p.color}</td>
-                  <td className="px-3 py-3">{p.talla}</td>
-                  <td className="px-3 py-3 font-mono text-tenue">{p.upc}</td>
-                  <td className="px-3 py-3 font-mono text-tenue">{p.sku}</td>
+                  <td className="px-3 py-1.5">{p.color}</td>
+                  <td className="px-3 py-1.5">{p.talla}</td>
+                  <td className="px-3 py-1.5 font-mono text-tenue">{p.upc}</td>
+                  <td className="px-3 py-1.5 font-mono text-tenue">{p.sku}</td>
                   {esAdmin && (
-                    <td className="px-5 py-2.5 text-right">
+                    <td className="px-5 py-1 text-right">
                       <form action={eliminarProducto}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button aria-label={`Supprimer ${p.nombre}`} className="h-9 rounded-lg px-2 text-[13px] text-tenue hover:text-[#a32020]">
+                        <button aria-label={`Supprimer ${p.nombre}`} className="h-7 rounded-lg px-2 text-[13px] text-tenue hover:text-[#a32020]">
                           Supprimer
                         </button>
                       </form>
@@ -247,6 +260,48 @@ export default async function InventarioPage({
           </tbody>
         </table>
       </div>
+
+      {total > 0 && (
+        <nav aria-label="Pages" className="flex flex-wrap items-center justify-between gap-3 text-sm">
+          <div className="flex items-center gap-2 text-tenue">
+            Afficher
+            {POR_PAGINA.map((n) => (
+              <Link
+                key={n}
+                href={url({ por: n })}
+                className={`flex h-8 min-w-10 items-center justify-center rounded-lg px-2 ${
+                  n === porPagina ? "bg-navy font-semibold text-white" : "border border-borde bg-white"
+                }`}
+              >
+                {n}
+              </Link>
+            ))}
+            par page
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-tenue">
+              {(pagina - 1) * porPagina + 1}–{Math.min(pagina * porPagina, total)} sur {total}
+            </span>
+            {pagina > 1 ? (
+              <Link href={url({ p: pagina - 1 })} className="flex h-8 items-center rounded-lg border border-borde bg-white px-3 font-semibold">
+                ‹ Précédent
+              </Link>
+            ) : (
+              <span className="flex h-8 items-center rounded-lg border border-borde px-3 text-tenue opacity-50">‹ Précédent</span>
+            )}
+            <span className="px-1 font-semibold">
+              Page {pagina} / {paginas}
+            </span>
+            {pagina < paginas ? (
+              <Link href={url({ p: pagina + 1 })} className="flex h-8 items-center rounded-lg border border-borde bg-white px-3 font-semibold">
+                Suivant ›
+              </Link>
+            ) : (
+              <span className="flex h-8 items-center rounded-lg border border-borde px-3 text-tenue opacity-50">Suivant ›</span>
+            )}
+          </div>
+        </nav>
+      )}
     </section>
   );
 }
