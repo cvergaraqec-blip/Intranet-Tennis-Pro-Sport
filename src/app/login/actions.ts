@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 const DOMINIO_INTERNO = "prosport.local";
 
 export async function iniciarSesion(formData: FormData) {
-  const identifiant = String(formData.get("identifiant") ?? "").trim();
+  const identifiant = String(formData.get("usuario") ?? "").trim();
   const email = identifiant.includes("@") ? identifiant : `${identifiant.toLowerCase()}@${DOMINIO_INTERNO}`;
 
   const supabase = await createClient();

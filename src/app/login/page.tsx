@@ -24,12 +24,12 @@ export default async function LoginPage({
         <form action={iniciarSesion} className="flex w-full max-w-sm flex-col gap-5">
           <div>
             <h2 className="text-3xl font-bold">Connexion</h2>
-            <p className="mt-1.5 text-tenue">Utilisez l’identifiant ou l’e-mail fourni par l’administrateur.</p>
+            <p className="mt-1.5 text-tenue">Utilisez le nom d’utilisateur fourni par l’administrateur.</p>
           </div>
-          {error && <p className="rounded-lg bg-[#fde7e7] px-3 py-2 text-sm text-[#a32020]">Identifiant ou mot de passe incorrect.</p>}
+          {error && <p className="rounded-lg bg-[#fde7e7] px-3 py-2 text-sm text-[#a32020]">Utilisateur ou mot de passe incorrect.</p>}
           <label className="flex flex-col gap-2 text-[15px] font-semibold">
-            Identifiant
-            <input name="identifiant" required autoComplete="username" autoCapitalize="none" className={campo} />
+            Utilisateur
+            <input name="usuario" required autoComplete="username" autoCapitalize="none" className={campo} />
           </label>
           <label className="flex flex-col gap-2 text-[15px] font-semibold">
             Mot de passe
