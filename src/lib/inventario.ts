@@ -1,8 +1,9 @@
-export const CATEGORIAS = ["Shoes", "Raquetas", "Cordajes", "Grips", "Accesorios y Pelotas"] as const;
+export const CATEGORIAS = ["Shoes", "Apparel", "Raquetas", "Cordajes", "Grips", "Accesorios y Pelotas"] as const;
 
 // Nombre que se muestra en pantalla; en la base se guarda el valor original.
 export const NOMBRE_CATEGORIA: Record<string, string> = {
   Shoes: "Shoes",
+  Apparel: "Apparel",
   Raquetas: "Raquettes",
   Cordajes: "Cordages",
   Grips: "Grips",
@@ -33,6 +34,11 @@ const SINONIMOS: Record<string, Categoria> = {
   zapatilla: "Shoes",
   zapatillas: "Shoes",
   zapatos: "Shoes",
+  vetements: "Apparel",
+  vetement: "Apparel",
+  ropa: "Apparel",
+  vestuario: "Apparel",
+  textile: "Apparel",
   raquette: "Raquetas",
   raqueta: "Raquetas",
   cordage: "Cordajes",
