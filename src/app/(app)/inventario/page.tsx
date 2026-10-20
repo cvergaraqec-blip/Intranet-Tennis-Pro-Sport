@@ -169,7 +169,7 @@ export default async function InventarioPage({
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-borde bg-white">
-        <table className="w-full min-w-[900px] border-collapse text-[15px]">
+        <table className="w-full min-w-[900px] border-collapse text-[13px]">
           <thead>
             <tr className="text-left text-xs tracking-wide text-tenue">
               <th className="px-5 py-4 font-semibold">PRODUIT</th>
@@ -195,21 +195,21 @@ export default async function InventarioPage({
                         <button
                           aria-label={`Retirer un ${p.nombre}`}
                           disabled={p.stock === 0}
-                          className="h-10 w-10 rounded-lg bg-suave text-xl disabled:opacity-40"
+                          className="h-9 w-9 rounded-lg bg-suave text-lg disabled:opacity-40"
                         >
                           −
                         </button>
                       </form>
                       <span
                         title={bajo ? "Stock bas" : undefined}
-                        className={`min-w-10 text-center text-xl font-bold ${bajo ? "text-[#c02626]" : ""}`}
+                        className={`min-w-8 text-center text-[13px] font-bold ${bajo ? "text-[#c02626]" : ""}`}
                       >
                         {p.stock}
                       </span>
                       <form action={ajustarStock}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="delta" value="1" />
-                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-10 w-10 rounded-lg bg-navy text-xl text-white">
+                        <button aria-label={`Ajouter un ${p.nombre}`} className="h-9 w-9 rounded-lg bg-navy text-lg text-white">
                           +
                         </button>
                       </form>
@@ -217,13 +217,13 @@ export default async function InventarioPage({
                   </td>
                   <td className="px-3 py-3">{p.color}</td>
                   <td className="px-3 py-3">{p.talla}</td>
-                  <td className="px-3 py-3 font-mono text-[13px] text-tenue">{p.upc}</td>
-                  <td className="px-3 py-3 font-mono text-[13px] text-tenue">{p.sku}</td>
+                  <td className="px-3 py-3 font-mono text-tenue">{p.upc}</td>
+                  <td className="px-3 py-3 font-mono text-tenue">{p.sku}</td>
                   {esAdmin && (
                     <td className="px-5 py-2.5 text-right">
                       <form action={eliminarProducto}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button aria-label={`Supprimer ${p.nombre}`} className="h-10 rounded-lg px-2 text-sm text-tenue hover:text-[#a32020]">
+                        <button aria-label={`Supprimer ${p.nombre}`} className="h-9 rounded-lg px-2 text-[13px] text-tenue hover:text-[#a32020]">
                           Supprimer
                         </button>
                       </form>
