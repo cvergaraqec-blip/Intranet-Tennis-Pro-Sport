@@ -63,7 +63,7 @@ export default async function InventarioPage({
               >
                 <p className="text-sm text-tenue">
                   Chargez un fichier CSV (Excel : Fichier › Enregistrer sous › CSV) avec les colonnes Produit, Stock, Couleur, Taille, UPC,
-                  SKU et Catégorie. Si le SKU existe déjà, le produit est mis à jour.
+                  SKU et Catégorie. Chaque ligne est une variante : si l’UPC existe déjà, le produit est mis à jour.
                 </p>
                 <a href="/inventario/modele" className="text-sm font-semibold text-navy underline">
                   Télécharger le modèle
@@ -138,7 +138,7 @@ export default async function InventarioPage({
         <p className="rounded-lg bg-[#fde7e7] px-4 py-3 font-semibold text-[#a32020]">{MENSAJES_IMPORT[params.import]}</p>
       )}
       {params.error === "sku" && (
-        <p className="rounded-lg bg-[#fde7e7] px-4 py-3 font-semibold text-[#a32020]">Ce SKU existe déjà.</p>
+        <p className="rounded-lg bg-[#fde7e7] px-4 py-3 font-semibold text-[#a32020]">Cet UPC existe déjà.</p>
       )}
 
       <form action="/inventario" className="flex h-12 items-center gap-2.5 rounded-xl border border-borde bg-white px-4">
