@@ -50,7 +50,7 @@ const COLUMNAS: Record<string, string[]> = {
   talla: ["taille", "talla", "size"],
   upc: ["upc", "code-barres", "code barres", "codigo de barras", "ean"],
   sku: ["sku", "code", "codigo", "reference", "ref"],
-  categoria: ["categorie", "categoria", "category"],
+  categoria: ["categorie", "categories", "categoria", "categorias", "category"],
 };
 
 export async function importarProductos(formData: FormData) {
