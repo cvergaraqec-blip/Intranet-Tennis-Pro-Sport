@@ -65,7 +65,9 @@ export async function importarProductos(formData: FormData) {
   );
   if (indice.nombre < 0) redirect("/inventario?import=formato");
 
-  const valor = (fila: string[], clave: string) => (indice[clave] >= 0 ? (fila[indice[clave]] ?? "").trim() : "");
+  // Acepta ="…" (formato del archivo exportado) y deja solo el valor.
+  const valor = (fila: string[], clave: string) =>
+    indice[clave] >= 0 ? (fila[indice[clave]] ?? "").trim().replace(/^="(.*)"$/, "$1") : "";
   const productos = filas
     .slice(1)
     .map((fila) => ({

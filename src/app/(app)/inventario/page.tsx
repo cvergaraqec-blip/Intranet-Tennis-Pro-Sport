@@ -51,82 +51,87 @@ export default async function InventarioPage({
           <h1 className="text-3xl font-bold">Inventaire du magasin</h1>
           <p className="mt-1 text-[15px] text-tenue">Contrôle rapide des stocks au comptoir</p>
         </div>
-        {esAdmin && (
-          <div className="flex flex-wrap gap-3">
-            <details className="relative">
-              <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg border border-borde bg-white px-5 font-semibold">
-                Importer
-              </summary>
-              <form
-                action={importarProductos}
-                className="absolute right-0 z-10 mt-2 flex w-[min(92vw,420px)] flex-col gap-3 rounded-xl border border-borde bg-white p-4 shadow-lg"
-              >
-                <p className="text-sm text-tenue">
-                  Chargez un fichier CSV (Excel : Fichier › Enregistrer sous › CSV) avec les colonnes Produit, Stock, Couleur, Taille, UPC,
-                  SKU et Catégorie. Chaque ligne est une variante : si l’UPC existe déjà, le produit est mis à jour.
-                </p>
-                <a href="/inventario/modele" className="text-sm font-semibold text-navy underline">
-                  Télécharger le modèle
-                </a>
-                <input name="archivo" type="file" accept=".csv,text/csv" required className="text-sm" />
-                <button className="h-11 rounded-lg bg-navy font-semibold text-white">Importer les produits</button>
-              </form>
-            </details>
-            <details className="relative">
-              <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg bg-acento px-5 font-semibold">
-                + Ajouter un produit
-              </summary>
-              <form
-                action={agregarProducto}
-                className="absolute right-0 z-10 mt-2 grid w-[min(92vw,420px)] gap-3 rounded-xl border border-borde bg-white p-4 shadow-lg"
-              >
-                <label className="flex flex-col gap-1 text-sm font-medium">
-                  Produit
-                  <input name="nombre" required className={campo} />
-                </label>
-                <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-wrap gap-3">
+          <a href="/inventario/exporter" className="flex h-12 items-center rounded-lg border border-borde bg-white px-5 font-semibold">
+            Exporter
+          </a>
+          {esAdmin && (
+            <>
+              <details className="relative">
+                <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg border border-borde bg-white px-5 font-semibold">
+                  Importer
+                </summary>
+                <form
+                  action={importarProductos}
+                  className="absolute right-0 z-10 mt-2 flex w-[min(92vw,420px)] flex-col gap-3 rounded-xl border border-borde bg-white p-4 shadow-lg"
+                >
+                  <p className="text-sm text-tenue">
+                    Chargez un fichier CSV (Excel : Fichier › Enregistrer sous › CSV) avec les colonnes Produit, Stock, Couleur, Taille, UPC,
+                    SKU et Catégorie. Chaque ligne est une variante : si l’UPC existe déjà, le produit est mis à jour.
+                  </p>
+                  <a href="/inventario/modele" className="text-sm font-semibold text-navy underline">
+                    Télécharger le modèle
+                  </a>
+                  <input name="archivo" type="file" accept=".csv,text/csv" required className="text-sm" />
+                  <button className="h-11 rounded-lg bg-navy font-semibold text-white">Importer les produits</button>
+                </form>
+              </details>
+              <details className="relative">
+                <summary className="flex h-12 cursor-pointer list-none items-center rounded-lg bg-acento px-5 font-semibold">
+                  + Ajouter un produit
+                </summary>
+                <form
+                  action={agregarProducto}
+                  className="absolute right-0 z-10 mt-2 grid w-[min(92vw,420px)] gap-3 rounded-xl border border-borde bg-white p-4 shadow-lg"
+                >
                   <label className="flex flex-col gap-1 text-sm font-medium">
-                    Couleur
-                    <input name="color" className={campo} />
+                    Produit
+                    <input name="nombre" required className={campo} />
                   </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      Couleur
+                      <input name="color" className={campo} />
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      Taille
+                      <input name="talla" placeholder="Grip 3, M, 42…" className={campo} />
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      UPC
+                      <input name="upc" inputMode="numeric" className={campo} />
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      SKU
+                      <input name="sku" className={campo} />
+                    </label>
+                  </div>
                   <label className="flex flex-col gap-1 text-sm font-medium">
-                    Taille
-                    <input name="talla" placeholder="Grip 3, M, 42…" className={campo} />
+                    Catégorie
+                    <select name="categoria" className={campo}>
+                      {CATEGORIAS.map((c) => (
+                        <option key={c} value={c}>
+                          {NOMBRE_CATEGORIA[c]}
+                        </option>
+                      ))}
+                    </select>
                   </label>
-                  <label className="flex flex-col gap-1 text-sm font-medium">
-                    UPC
-                    <input name="upc" inputMode="numeric" className={campo} />
-                  </label>
-                  <label className="flex flex-col gap-1 text-sm font-medium">
-                    SKU
-                    <input name="sku" className={campo} />
-                  </label>
-                </div>
-                <label className="flex flex-col gap-1 text-sm font-medium">
-                  Catégorie
-                  <select name="categoria" className={campo}>
-                    {CATEGORIAS.map((c) => (
-                      <option key={c} value={c}>
-                        {NOMBRE_CATEGORIA[c]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <label className="flex flex-col gap-1 text-sm font-medium">
-                    Stock
-                    <input name="stock" type="number" min="0" defaultValue="0" className={campo} />
-                  </label>
-                  <label className="flex flex-col gap-1 text-sm font-medium">
-                    Alerte stock bas
-                    <input name="minimo" type="number" min="0" defaultValue="1" className={campo} />
-                  </label>
-                </div>
-                <button className="h-11 rounded-lg bg-navy font-semibold text-white">Enregistrer</button>
-              </form>
-            </details>
-          </div>
-        )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      Stock
+                      <input name="stock" type="number" min="0" defaultValue="0" className={campo} />
+                    </label>
+                    <label className="flex flex-col gap-1 text-sm font-medium">
+                      Alerte stock bas
+                      <input name="minimo" type="number" min="0" defaultValue="1" className={campo} />
+                    </label>
+                  </div>
+                  <button className="h-11 rounded-lg bg-navy font-semibold text-white">Enregistrer</button>
+                </form>
+              </details>
+            </>
+          )}
+        </div>
       </div>
 
       {params.import === "ok" && (
